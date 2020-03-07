@@ -1,0 +1,10 @@
+{
+  "name": "pjz9n/pterodactyl-php-sdk",
+  "description": "Simple and lightweight Pterodactyl API SDK",
+  "type": "library",
+  "license": "GPL-v3",
+  "require": {
+    "ext-json": "*",
+    "ext-curl": "*"
+  }
+}
