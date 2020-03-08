@@ -219,7 +219,7 @@ class ClientAPI extends PterodactylSDK
                 throw new InvalidArgumentError($this, "Invalid ServerID.");
             } else if ($responseError->getCode() === 500) {
                 throw new ServerNotFoundError($this);
-            } else if ($responseError->getMessage() === 412) {
+            } else if ($responseError->getCode() === 412) {
                 throw new ServerOfflineError($this);
             }
             throw $responseError;
