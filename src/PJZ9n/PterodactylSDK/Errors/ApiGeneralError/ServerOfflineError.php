@@ -27,15 +27,10 @@ use PJZ9n\PterodactylSDK\Errors\PterodactylSDKError;
 use PJZ9n\PterodactylSDK\PterodactylSDK;
 use Throwable;
 
-/**
- * Class ServerNotFoundError
- *
- * @package PJZ9n\PterodactylSDK\Errors\ApiGeneralError
- */
-class ServerNotFoundError extends PterodactylSDKError
+class ServerOfflineError extends PterodactylSDKError
 {
     
-    public function __construct(PterodactylSDK $pterodactylSdk, $message = "Server is not found.", $code = 0, Throwable $previous = null)
+    public function __construct(PterodactylSDK $pterodactylSdk, $message = "Server is Offline.", $code = 0, Throwable $previous = null)
     {
         parent::__construct($pterodactylSdk, $message, $code, $previous);
     }

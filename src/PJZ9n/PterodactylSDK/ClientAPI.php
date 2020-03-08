@@ -25,6 +25,7 @@ namespace PJZ9n\PterodactylSDK;
 
 use PJZ9n\PterodactylSDK\Errors\ApiGeneralError\InvalidArgumentError;
 use PJZ9n\PterodactylSDK\Errors\ApiGeneralError\ServerNotFoundError;
+use PJZ9n\PterodactylSDK\Errors\ApiGeneralError\ServerOfflineError;
 use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ResponseError;
 use PJZ9n\PterodactylSDK\Objects\Resource\Cpu\Cpu;
 use PJZ9n\PterodactylSDK\Objects\Resource\Disk\Disk;
@@ -115,9 +116,9 @@ class ClientAPI extends PterodactylSDK
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500
             if ($responseError->getCode() === 404) {
-                throw new InvalidArgumentError($this);
+                throw new InvalidArgumentError($this, "Invalid ServerID");
             } else if ($responseError->getCode() === 500) {
-                throw new ServerNotFoundError($this, "Server not found.");
+                throw new ServerNotFoundError($this);
             }
             throw $responseError;
         }
@@ -161,9 +162,9 @@ class ClientAPI extends PterodactylSDK
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500
             if ($responseError->getCode() === 404) {
-                throw new InvalidArgumentError($this);
+                throw new InvalidArgumentError($this, "Invalid ServerID");
             } else if ($responseError->getCode() === 500) {
-                throw new ServerNotFoundError($this, "Server not found.");
+                throw new ServerNotFoundError($this);
             }
             throw $responseError;
         }
@@ -195,6 +196,34 @@ class ClientAPI extends PterodactylSDK
             )
         );
         return $resource;
+    }
+    
+    /**
+     * Send Console Command
+     *
+     * @param string $id ex: 1ab234c5
+     * @param string $command
+     *
+     * @throws ApiRequestError
+     * @throws ServerNotFoundError
+     * @throws InvalidArgumentError
+     * @throws ServerOfflineError
+     */
+    public function sendConsoleCommand(string $id, string $command): void
+    {
+        try {
+            $response = $this->apiRequest("POST", self::CLIENT_ENDPOINT . "/servers/{$id}/command");//Success: 204 No Content
+        } catch (ResponseError $responseError) {
+            //No ServerID = 404 || Not Found Server = 500 || Server Offline = 412
+            if ($responseError->getCode() === 404) {
+                throw new InvalidArgumentError($this, "Invalid ServerID");
+            } else if ($responseError->getCode() === 500) {
+                throw new ServerNotFoundError($this);
+            } else if ($responseError->getMessage() === 412) {
+                throw new ServerOfflineError($this);
+            }
+            throw $responseError;
+        }
     }
     
 }
