@@ -35,6 +35,7 @@ use PJZ9n\PterodactylSDK\Objects\Server\FeatureLimits\FeatureLimits;
 use PJZ9n\PterodactylSDK\Objects\Server\Limits\Limits;
 use PJZ9n\PterodactylSDK\Objects\Server\Server;
 use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ApiRequestError;
+use PJZ9n\PterodactylSDK\Variables\PowerAction\PowerAction;
 use RuntimeException;
 
 /**
@@ -221,6 +222,39 @@ class ClientAPI extends PterodactylSDK
                 throw new ServerNotFoundError($this);
             } else if ($responseError->getCode() === 412) {
                 throw new ServerOfflineError($this);
+            }
+            throw $responseError;
+        }
+    }
+    
+    /**
+     * Send Power Action
+     *
+     * @param string $id
+     * @param string $signal
+     *
+     * @throws ApiRequestError
+     * @throws InvalidArgumentError
+     * @throws ResponseError
+     * @throws ServerNotFoundError
+     * @throws ServerOfflineError
+     *
+     * @see PowerAction
+     */
+    public function sendPowerAction(string $id, string $signal): void
+    {
+        try {
+            $response = $this->apiRequest("POST", self::CLIENT_ENDPOINT . "/servers/{$id}/power", [
+                "signal" => $signal,
+            ]);//Success: 204 No Content
+        } catch (ResponseError $responseError) {
+            //No ServerID = 404 || Not Found Server = 500 || Invalid Signal = 422
+            if ($responseError->getCode() === 404) {
+                throw new InvalidArgumentError($this, "Invalid ServerID.");
+            } else if ($responseError->getCode() === 500) {
+                throw new ServerNotFoundError($this);
+            } else if ($responseError->getCode() === 422) {
+                throw new InvalidArgumentError($this, "Invalid Signal.");
             }
             throw $responseError;
         }
