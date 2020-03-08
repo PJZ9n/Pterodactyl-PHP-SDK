@@ -24,10 +24,15 @@ declare(strict_types=1);
 namespace PJZ9n\PterodactylSDK;
 
 use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ResponseError;
+use PJZ9n\PterodactylSDK\Objects\Resource\Cpu\Cpu;
+use PJZ9n\PterodactylSDK\Objects\Resource\Disk\Disk;
+use PJZ9n\PterodactylSDK\Objects\Resource\Memory\Memory;
+use PJZ9n\PterodactylSDK\Objects\Resource\Resource;
 use PJZ9n\PterodactylSDK\Objects\Server\FeatureLimits\FeatureLimits;
 use PJZ9n\PterodactylSDK\Objects\Server\Limits\Limits;
 use PJZ9n\PterodactylSDK\Objects\Server\Server;
 use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ApiRequestError;
+use RuntimeException;
 
 /**
  * Class ClientAPI
@@ -93,7 +98,7 @@ class ClientAPI extends PterodactylSDK
     /**
      * Get Server
      *
-     * @param string $id
+     * @param string $id ex: 1ab234c5
      *
      * @return Server|null
      *
@@ -130,6 +135,56 @@ class ClientAPI extends PterodactylSDK
             )
         );
         return $server;
+    }
+    
+    /**
+     * Get Server Resource
+     *
+     * @param string $id ex: 1ab234c5
+     *
+     * @return Resource|null
+     *
+     * @throws ApiRequestError
+     */
+    public function getResource(string $id): ?Resource
+    {
+        try {
+            $response = $this->apiRequest("GET", self::CLIENT_ENDPOINT . "/servers/{$id}/utilization");
+        } catch (ResponseError $responseError) {
+            //No ServerID = 404 || Not Found Server = 500
+            if ($responseError->getCode() === 404 || $responseError->getCode() === 500) {
+                return null;
+            }
+            throw $responseError;
+        }
+        $statsAttribute = $response["result"]["attributes"];
+        switch ($statsAttribute["state"]) {
+            case "off":
+                $stateBool = false;
+                break;
+            case "on":
+                $stateBool = true;
+                break;
+            default:
+                throw new RuntimeException("Invalid state.");
+        }
+        $resource = new Resource(
+            $stateBool,
+            new Memory(
+                $statsAttribute["memory"]["current"],
+                $statsAttribute["memory"]["limit"]
+            ),
+            new Cpu(
+                $statsAttribute["cpu"]["current"],
+                $statsAttribute["cpu"]["cores"],
+                $statsAttribute["cpu"]["limit"]
+            ),
+            new Disk(
+                $statsAttribute["disk"]["current"],
+                $statsAttribute["disk"]["limit"]
+            )
+        );
+        return $resource;
     }
     
 }
