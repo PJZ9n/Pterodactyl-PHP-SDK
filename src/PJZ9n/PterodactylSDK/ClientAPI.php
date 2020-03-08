@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace PJZ9n\PterodactylSDK;
 
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ResponseError;
 use PJZ9n\PterodactylSDK\Objects\Server\FeatureLimits\FeatureLimits;
 use PJZ9n\PterodactylSDK\Objects\Server\Limits\Limits;
 use PJZ9n\PterodactylSDK\Objects\Server\Server;
-use PJZ9n\PterodactylSDK\Errors\ApiRequestError;
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ApiRequestError;
 
 /**
  * Class ClientAPI
@@ -87,6 +88,48 @@ class ClientAPI extends PterodactylSDK
             );
         }
         return $servers;
+    }
+    
+    /**
+     * Get Server
+     *
+     * @param string $id
+     *
+     * @return Server|null
+     *
+     * @throws ApiRequestError
+     */
+    public function getServer(string $id): ?Server
+    {
+        try {
+            $response = $this->apiRequest("GET", self::CLIENT_ENDPOINT . "/servers/{$id}");
+        } catch (ResponseError $responseError) {
+            //No ServerID = 404 || Not Found Server = 500
+            if ($responseError->getCode() === 404 || $responseError->getCode() === 500) {
+                return null;
+            }
+            throw $responseError;
+        }
+        $serverAttribute = $response["result"]["attributes"];
+        $server = new Server(
+            $serverAttribute["server_owner"],
+            $serverAttribute["identifier"],
+            $serverAttribute["uuid"],
+            $serverAttribute["name"],
+            $serverAttribute["description"],
+            new Limits(
+                $serverAttribute["limits"]["memory"],
+                $serverAttribute["limits"]["swap"],
+                $serverAttribute["limits"]["disk"],
+                $serverAttribute["limits"]["io"],
+                $serverAttribute["limits"]["cpu"]
+            ),
+            new FeatureLimits(
+                $serverAttribute["feature_limits"]["databases"],
+                $serverAttribute["feature_limits"]["allocations"]
+            )
+        );
+        return $server;
     }
     
 }
