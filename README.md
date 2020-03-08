@@ -7,7 +7,7 @@ Language:
   - [English](#english)
   - [日本語](#日本語)
 
-## 英語
+## English
 Simple and lightweight Pterodactyl API SDK
 
 ### Feature
