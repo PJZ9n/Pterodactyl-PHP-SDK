@@ -121,6 +121,13 @@ abstract class PterodactylSDK
             //No 2xx
             throw new ResponseError($this, "Response code " . $responseCode, $responseCode);
         }
+        if ($responseCode === 204) {
+            //No Content
+            return [
+                "code" => $responseCode,
+                "result" => null,
+            ];
+        }
         $decodedResult = json_decode($result, true);
         //Check json error
         if (json_last_error_msg() !== "No error") {
