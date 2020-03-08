@@ -101,19 +101,27 @@ abstract class PterodactylSDK
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => $header,
-            CURLOPT_FAILONERROR => true,
+            //CURLOPT_FAILONERROR => true,
         ]);
         $result = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
+        //Check curl errror
         if ($result === false) {
             throw new ApiRequestError($this, "Curl: " . $curlError);
         }
+        //Check response code
+        if (substr((string)$responseCode, 0, 1) !== "2") {
+            //No 2xx
+            throw new ApiRequestError($this, "Response error: " . $responseCode);
+        }
         $decodedResult = json_decode($result, true);
+        //Check json error
         if (json_last_error_msg() !== "No error") {
             throw new ApiRequestError($this, "Json Decode: " . json_last_error_msg());
         }
+        //Check type
         if (!is_array($decodedResult)) {
             throw new ApiRequestError($this, "API returned not an array.");
         }
