@@ -101,12 +101,14 @@ abstract class PterodactylSDK
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => $header,
+            CURLOPT_FAILONERROR => true,
         ]);
         $result = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $curlError = curl_error($ch);
         curl_close($ch);
         if ($result === false) {
-            throw new ApiRequestError($this, "Curl: " . curl_error($ch));
+            throw new ApiRequestError($this, "Curl: " . $curlError);
         }
         $decodedResult = json_decode($result, true);
         if (json_last_error_msg() !== "No error") {
