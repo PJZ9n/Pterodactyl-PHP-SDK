@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace PJZ9n\PterodactylSDK;
 
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError;
+
 /**
  * Class PterodactylSDK
  *
@@ -35,13 +37,13 @@ abstract class PterodactylSDK
      * @var string API URL
      * ex: https://pterodactyl.app/api
      */
-    protected $apiUrl;
+    private $apiUrl;
     
     /**
      * @var string API KEY
      * ex: HogeFuga12345abc
      */
-    protected $apiKey;
+    private $apiKey;
     
     /**
      * PterodactylSDK constructor.
@@ -49,10 +51,74 @@ abstract class PterodactylSDK
      * @param string $apiUrl API URL
      * @param string $apiKey API KEY
      */
-    protected function __construct(string $apiUrl, string $apiKey)
+    public function __construct(string $apiUrl, string $apiKey)
     {
         $this->apiUrl = $apiUrl;
         $this->apiKey = $apiKey;
+    }
+    
+    /**
+     * Get API URL
+     *
+     * @return string
+     */
+    final public function getApiUrl(): string
+    {
+        return $this->apiUrl;
+    }
+    
+    /**
+     * Get API KEY
+     *
+     * @return string
+     */
+    final public function getApiKey(): string
+    {
+        return $this->getAPIKey();
+    }
+    
+    /**
+     * @param string $method Request Method
+     * @param string $endpoint API Endpoint
+     * @param array|null $data Data
+     *
+     * @return array
+     *
+     * @throws ApiRequestError
+     */
+    protected function apiRequest(string $method, string $endpoint, ?array $data = null): array
+    {
+        $ch = curl_init();
+        $header = [];
+        if ($data !== null) {
+            $header[] = "Content-Type: application/json";
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        }
+        $header[] = "Authorization: Bearer " . $this->apiKey;
+        $header[] = "Accept: Application/vnd.pterodactyl.v1+json";
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $this->apiUrl . $endpoint,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => $header,
+        ]);
+        $result = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+        if ($result === false) {
+            throw new ApiRequestError($this, "Curl: " . curl_error($ch));
+        }
+        $decodedResult = json_decode($result, true);
+        if (json_last_error_msg() !== "No error") {
+            throw new ApiRequestError($this, "Json Decode: " . json_last_error_msg());
+        }
+        if (!is_array($decodedResult)) {
+            throw new ApiRequestError($this, "API returned not an array.");
+        }
+        return [
+            "code" => $responseCode,
+            "result" => $decodedResult,
+        ];
     }
     
 }
