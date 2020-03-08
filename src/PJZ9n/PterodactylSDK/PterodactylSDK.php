@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace PJZ9n\PterodactylSDK;
 
-use PJZ9n\PterodactylSDK\Errors\ApiRequestError;
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ApiRequestError;
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\CurlError;
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\JsonError;
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ResponseError;
+use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ReturnTypeError;
 
 /**
  * Class PterodactylSDK
@@ -110,21 +114,21 @@ abstract class PterodactylSDK
         curl_close($ch);
         //Check curl errror
         if ($result === false) {
-            throw new ApiRequestError($this, "Curl: " . $curlError, $curlErrorNo);
+            throw new CurlError($this, $curlError, $curlErrorNo);
         }
         //Check response code
         if (substr((string)$responseCode, 0, 1) !== "2") {
             //No 2xx
-            throw new ApiRequestError($this, "Response error: " . $responseCode, $responseCode);
+            throw new ResponseError($this, "Response code " . $responseCode, $responseCode);
         }
         $decodedResult = json_decode($result, true);
         //Check json error
         if (json_last_error_msg() !== "No error") {
-            throw new ApiRequestError($this, "Json Decode: " . json_last_error_msg(), json_last_error());
+            throw new JsonError($this, json_last_error_msg(), json_last_error());
         }
         //Check type
         if (!is_array($decodedResult)) {
-            throw new ApiRequestError($this, "API returned not an array.");
+            throw new ReturnTypeError($this, "API returned not an array.");
         }
         return [
             "code" => $responseCode,

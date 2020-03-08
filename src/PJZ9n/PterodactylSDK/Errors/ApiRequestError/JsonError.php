@@ -21,9 +21,14 @@
 
 declare(strict_types=1);
 
-namespace PJZ9n\PterodactylSDK\Errors;
+namespace PJZ9n\PterodactylSDK\Errors\ApiRequestError;
 
-class ApiRequestError extends PterodactylSDKError
+/**
+ * Class JsonError
+ *
+ * @package PJZ9n\PterodactylSDK\Errors\ApiRequestError
+ */
+class JsonError extends ApiRequestError
 {
     
     //
