@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace PJZ9n\PterodactylSDK;
 
+use PJZ9n\PterodactylSDK\Errors\ApiGeneralError\InvalidArgumentError;
+use PJZ9n\PterodactylSDK\Errors\ApiGeneralError\ServerNotFoundError;
 use PJZ9n\PterodactylSDK\Errors\ApiRequestError\ResponseError;
 use PJZ9n\PterodactylSDK\Objects\Resource\Cpu\Cpu;
 use PJZ9n\PterodactylSDK\Objects\Resource\Disk\Disk;
@@ -100,18 +102,22 @@ class ClientAPI extends PterodactylSDK
      *
      * @param string $id ex: 1ab234c5
      *
-     * @return Server|null
+     * @return Server
      *
      * @throws ApiRequestError
+     * @throws ServerNotFoundError
+     * @throws InvalidArgumentError
      */
-    public function getServer(string $id): ?Server
+    public function getServer(string $id): Server
     {
         try {
             $response = $this->apiRequest("GET", self::CLIENT_ENDPOINT . "/servers/{$id}");
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500
-            if ($responseError->getCode() === 404 || $responseError->getCode() === 500) {
-                return null;
+            if ($responseError->getCode() === 404) {
+                throw new InvalidArgumentError($this);
+            } else if ($responseError->getCode() === 500) {
+                throw new ServerNotFoundError($this, "Server not found.");
             }
             throw $responseError;
         }
@@ -142,18 +148,22 @@ class ClientAPI extends PterodactylSDK
      *
      * @param string $id ex: 1ab234c5
      *
-     * @return Resource|null
+     * @return Resource
      *
      * @throws ApiRequestError
+     * @throws ServerNotFoundError
+     * @throws InvalidArgumentError
      */
-    public function getResource(string $id): ?Resource
+    public function getResource(string $id): Resource
     {
         try {
             $response = $this->apiRequest("GET", self::CLIENT_ENDPOINT . "/servers/{$id}/utilization");
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500
-            if ($responseError->getCode() === 404 || $responseError->getCode() === 500) {
-                return null;
+            if ($responseError->getCode() === 404) {
+                throw new InvalidArgumentError($this);
+            } else if ($responseError->getCode() === 500) {
+                throw new ServerNotFoundError($this, "Server not found.");
             }
             throw $responseError;
         }
