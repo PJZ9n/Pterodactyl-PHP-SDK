@@ -157,27 +157,11 @@ class User
     }
     
     /**
-     * @param string $userName
-     */
-    public function setUserName(string $userName): void
-    {
-        $this->userName = $userName;
-    }
-    
-    /**
      * @return string
      */
     public function getEmail(): string
     {
         return $this->email;
-    }
-    
-    /**
-     * @param string $email
-     */
-    public function setEmail(string $email): void
-    {
-        $this->email = $email;
     }
     
     /**
@@ -189,27 +173,11 @@ class User
     }
     
     /**
-     * @param string $firstName
-     */
-    public function setFirstName(string $firstName): void
-    {
-        $this->firstName = $firstName;
-    }
-    
-    /**
      * @return string
      */
     public function getLastName(): string
     {
         return $this->lastName;
-    }
-    
-    /**
-     * @param string $lastName
-     */
-    public function setLastName(string $lastName): void
-    {
-        $this->lastName = $lastName;
     }
     
     /**
@@ -221,14 +189,6 @@ class User
     }
     
     /**
-     * @param string $language
-     */
-    public function setLanguage(string $language): void
-    {
-        $this->language = $language;
-    }
-    
-    /**
      * @return bool
      */
     public function isRootAdmin(): bool
@@ -237,29 +197,11 @@ class User
     }
     
     /**
-     * @param bool $rootAdmin
-     */
-    public function setRootAdmin(bool $rootAdmin): void
-    {
-        $this->rootAdmin = $rootAdmin;
-    }
-    
-    /**
      * @return bool
      */
     public function isTwoFactor(): bool
     {
         return $this->twoFactor;
-    }
-    
-    /**
-     * TODO
-     *
-     * @param bool $twoFactor
-     */
-    public function setTwoFactor(bool $twoFactor): void
-    {
-        $this->twoFactor = $twoFactor;
     }
     
     /**
