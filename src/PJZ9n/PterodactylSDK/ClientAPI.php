@@ -116,7 +116,7 @@ class ClientAPI extends PterodactylSDK
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500
             if ($responseError->getCode() === 404) {
-                throw new InvalidArgumentError($this, "Invalid ServerID");
+                throw new InvalidArgumentError($this, "Invalid ServerID.");
             } else if ($responseError->getCode() === 500) {
                 throw new ServerNotFoundError($this);
             }
@@ -162,7 +162,7 @@ class ClientAPI extends PterodactylSDK
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500
             if ($responseError->getCode() === 404) {
-                throw new InvalidArgumentError($this, "Invalid ServerID");
+                throw new InvalidArgumentError($this, "Invalid ServerID.");
             } else if ($responseError->getCode() === 500) {
                 throw new ServerNotFoundError($this);
             }
@@ -216,7 +216,7 @@ class ClientAPI extends PterodactylSDK
         } catch (ResponseError $responseError) {
             //No ServerID = 404 || Not Found Server = 500 || Server Offline = 412
             if ($responseError->getCode() === 404) {
-                throw new InvalidArgumentError($this, "Invalid ServerID");
+                throw new InvalidArgumentError($this, "Invalid ServerID.");
             } else if ($responseError->getCode() === 500) {
                 throw new ServerNotFoundError($this);
             } else if ($responseError->getMessage() === 412) {
