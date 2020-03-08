@@ -106,20 +106,21 @@ abstract class PterodactylSDK
         $result = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $curlError = curl_error($ch);
+        $curlErrorNo = curl_errno($ch);
         curl_close($ch);
         //Check curl errror
         if ($result === false) {
-            throw new ApiRequestError($this, "Curl: " . $curlError);
+            throw new ApiRequestError($this, "Curl: " . $curlError, $curlErrorNo);
         }
         //Check response code
         if (substr((string)$responseCode, 0, 1) !== "2") {
             //No 2xx
-            throw new ApiRequestError($this, "Response error: " . $responseCode);
+            throw new ApiRequestError($this, "Response error: " . $responseCode, $responseCode);
         }
         $decodedResult = json_decode($result, true);
         //Check json error
         if (json_last_error_msg() !== "No error") {
-            throw new ApiRequestError($this, "Json Decode: " . json_last_error_msg());
+            throw new ApiRequestError($this, "Json Decode: " . json_last_error_msg(), json_last_error());
         }
         //Check type
         if (!is_array($decodedResult)) {
