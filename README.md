@@ -27,8 +27,15 @@ Client API:
   - [x] Send Power Action (For example, server start)
   
 Application API:
-
-Comming Soon...(Now Development)
+  - User
+    - [x] Get All Users
+    - [x] Get User (By ID)
+    - [x] Get User (By External ID)
+    - [x] Create User
+    - [x] Edit User
+    - [x] Delete User
+  - Nodes
+    - Now Development...
 
 ### How to use
 Run the following command in the command line
@@ -100,8 +107,15 @@ Client API:
   - [x] 電源アクションを送信 (例えば、サーバーの起動)
   
 Application API:
-
-Comming Soon...(開発中)
+  - User
+    - [x] 全てのユーザーを取得
+    - [x] ユーザーの情報を取得
+    - [x] ユーザーをIDから取得
+    - [x] ユーザーを作成
+    - [x] ユーザーを編集
+    - [x] ユーザーを削除
+  - Nodes
+    - 開発中...
 
 ### 使い方
 コマンドラインで以下のコマンドを実行する
